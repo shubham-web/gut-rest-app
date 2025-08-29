@@ -1,22 +1,24 @@
 {
   "expo": {
-    "name": "gut-rest",
-    "slug": "gut-rest",
-    "version": "1.0.0",
+    "name": "GutRest",
+    "slug": "GutRest",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gutrest",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shubhamprjpt.gut-rest"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#e5efdf"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.shubhamprjpt.gutrest"
     },
     "web": {
       "bundler": "metro",
@@ -31,7 +33,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#e5efdf"
         }
       ]
     ],
