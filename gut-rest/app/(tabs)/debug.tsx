@@ -11,6 +11,7 @@ import { Table, Row, Rows } from "react-native-table-component";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { databaseService } from "@/services/database";
 
 interface TableInfo {
@@ -30,6 +31,18 @@ export default function DebugScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
+
+  // Theme colors
+  const textColor = useThemeColor({}, "text");
+  const backgroundColor = useThemeColor({}, "background");
+  const borderColor = useThemeColor(
+    { light: "rgba(0, 0, 0, 0.2)", dark: "rgba(255, 255, 255, 0.2)" },
+    "text"
+  );
+  const headerBgColor = useThemeColor(
+    { light: "rgba(0, 0, 0, 0.05)", dark: "rgba(255, 255, 255, 0.05)" },
+    "text"
+  );
 
   const loadDebugData = async () => {
     setIsLoading(true);
@@ -184,16 +197,21 @@ export default function DebugScreen() {
                 showsHorizontalScrollIndicator={true}
                 style={styles.tableScrollView}
               >
-                <Table borderStyle={styles.tableBorder}>
+                <Table
+                  borderStyle={{ borderWidth: 1, borderColor: borderColor }}
+                >
                   <Row
                     data={tableHead}
-                    style={styles.tableHead}
-                    textStyle={styles.tableHeadText}
+                    style={[
+                      styles.tableHead,
+                      { backgroundColor: headerBgColor },
+                    ]}
+                    textStyle={[styles.tableHeadText, { color: textColor }]}
                     widthArr={columnWidths}
                   />
                   <Rows
                     data={tableData}
-                    textStyle={styles.tableText}
+                    textStyle={[styles.tableText, { color: textColor }]}
                     style={styles.tableRow}
                     widthArr={columnWidths}
                   />
@@ -454,21 +472,16 @@ const styles = StyleSheet.create({
   },
   tableScrollView: {
     marginVertical: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.02)",
     borderRadius: 8,
-  },
-  tableBorder: {
-    borderWidth: 1,
-    borderColor: "rgba(128, 128, 128, 0.2)",
+    overflow: "hidden",
   },
   tableHead: {
     height: 50,
-    backgroundColor: "rgba(128, 128, 128, 0.1)",
   },
   tableHeadText: {
     fontSize: 12,
     fontWeight: "bold",
-    textAlign: "center",
+    textAlign: "center" as const,
     paddingHorizontal: 8,
     textTransform: "uppercase" as const,
     paddingVertical: 4,
@@ -478,7 +491,7 @@ const styles = StyleSheet.create({
   },
   tableText: {
     fontSize: 11,
-    textAlign: "center",
+    textAlign: "center" as const,
     paddingHorizontal: 8,
     fontFamily: "monospace",
     paddingVertical: 4,

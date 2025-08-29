@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { TimeGap as TimeGapType } from "@/types";
 import { GlobalStyles, Spacing, BorderRadius } from "@/styles/globals";
 
@@ -11,6 +12,21 @@ interface TimeGapProps {
 }
 
 export function TimeGap({ gap, isLast = false }: TimeGapProps) {
+  // Theme colors
+  const textColor = useThemeColor({}, "text");
+  const cardBackground = useThemeColor(
+    { light: "#F8F9FA", dark: "#2C2C2E" },
+    "background"
+  );
+  const borderColor = useThemeColor(
+    { light: "#E9ECEF", dark: "#3C3C3E" },
+    "text"
+  );
+  const subtleTextColor = useThemeColor(
+    { light: "#333", dark: "#CCCCCC" },
+    "text"
+  );
+
   const getGapColor = (durationMs: number) => {
     const hours = durationMs / (1000 * 60 * 60);
 
@@ -46,11 +62,19 @@ export function TimeGap({ gap, isLast = false }: TimeGapProps) {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedView style={styles.gapCard}>
+      <ThemedView
+        style={[
+          styles.gapCard,
+          { backgroundColor: cardBackground, borderColor: borderColor },
+        ]}
+      >
         <ThemedView style={styles.gapHeader}>
           <ThemedText style={styles.gapIcon}>⏱</ThemedText>
           <ThemedView style={styles.gapInfo}>
-            <ThemedText type="defaultSemiBold" style={styles.gapDuration}>
+            <ThemedText
+              type="defaultSemiBold"
+              style={[styles.gapDuration, { color: subtleTextColor }]}
+            >
               {gap.durationFormatted}
             </ThemedText>
             <ThemedText style={[styles.gapLabel, { color: gapColor }]}>
@@ -63,7 +87,10 @@ export function TimeGap({ gap, isLast = false }: TimeGapProps) {
       {/* Timeline line on the right */}
       <ThemedView style={[styles.timelineLine, { backgroundColor: gapColor }]}>
         <ThemedView
-          style={[styles.timelineDot, { backgroundColor: gapColor }]}
+          style={[
+            styles.timelineDot,
+            { backgroundColor: gapColor, borderColor: cardBackground },
+          ]}
         />
       </ThemedView>
     </ThemedView>
@@ -80,14 +107,12 @@ const styles = StyleSheet.create({
   },
   gapCard: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
     borderRadius: BorderRadius.md,
     padding: Spacing.sm,
     marginRight: 12,
     justifyContent: "center",
     // Subtle border instead of shadow
     borderWidth: 1,
-    borderColor: "#E9ECEF",
   },
   gapHeader: {
     flexDirection: "row",
@@ -107,7 +132,6 @@ const styles = StyleSheet.create({
   gapDuration: {
     fontSize: 14,
     lineHeight: 16,
-    color: "#333",
   },
   gapLabel: {
     fontSize: 12,
@@ -130,6 +154,5 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: "#FFFFFF",
   },
 });

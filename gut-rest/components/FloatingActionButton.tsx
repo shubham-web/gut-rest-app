@@ -14,6 +14,7 @@ interface FloatingActionButtonProps {
 export function FloatingActionButton({ onPress }: FloatingActionButtonProps) {
   const backgroundColor = useThemeColor({}, "tint");
   const textColor = useThemeColor({}, "background");
+  const shadowColor = useThemeColor({ light: "#000", dark: "#000" }, "text");
 
   const handlePress = () => {
     if (onPress) {
@@ -27,7 +28,7 @@ export function FloatingActionButton({ onPress }: FloatingActionButtonProps) {
   return (
     <ThemedView style={styles.container}>
       <Pressable
-        style={[styles.button, { backgroundColor }]}
+        style={[styles.button, { backgroundColor, shadowColor }]}
         onPress={handlePress}
         android_ripple={{ color: "rgba(255, 255, 255, 0.2)" }}
       >
@@ -51,7 +52,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 8, // Higher elevation for Android
-    shadowColor: "#000", // iOS shadow
     shadowOffset: {
       width: 0,
       height: 4,

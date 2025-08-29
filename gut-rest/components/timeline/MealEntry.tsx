@@ -3,6 +3,7 @@ import { StyleSheet, Pressable, Alert } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { MealEntry as MealEntryType } from "@/types";
 import { getCategoryConfig } from "@/constants/MealCategories";
 import { GlobalStyles, Spacing, BorderRadius } from "@/styles/globals";
@@ -17,6 +18,22 @@ interface MealEntryProps {
 export function MealEntry({ entry, onDelete, onEdit }: MealEntryProps) {
   const colorScheme = useColorScheme();
   const categoryConfig = getCategoryConfig(entry.category);
+
+  // Theme colors
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
+  const cardBackground = useThemeColor(
+    { light: "#FFFFFF", dark: "#2C2C2E" },
+    "background"
+  );
+  const subtleTextColor = useThemeColor(
+    { light: "#666", dark: "#A0A0A0" },
+    "text"
+  );
+  const timelineColor = useThemeColor(
+    { light: "#E0E0E0", dark: "#3C3C3E" },
+    "text"
+  );
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("en-US", {
@@ -55,17 +72,24 @@ export function MealEntry({ entry, onDelete, onEdit }: MealEntryProps) {
 
   const entryContent = (
     <ThemedView style={styles.entryWrapper}>
-      <ThemedView style={styles.container}>
+      <ThemedView
+        style={[styles.container, { backgroundColor: cardBackground }]}
+      >
         <ThemedView style={styles.header}>
           <ThemedView style={styles.categoryInfo}>
             <ThemedText style={styles.categoryIcon}>
               {categoryConfig.icon}
             </ThemedText>
             <ThemedView style={styles.textContainer}>
-              <ThemedText type="defaultSemiBold" style={styles.categoryLabel}>
+              <ThemedText
+                type="defaultSemiBold"
+                style={[styles.categoryLabel, { color: textColor }]}
+              >
                 {categoryConfig.label}
               </ThemedText>
-              <ThemedText style={styles.timestamp}>
+              <ThemedText
+                style={[styles.timestamp, { color: subtleTextColor }]}
+              >
                 {formatTime(entry.timestamp)}
               </ThemedText>
             </ThemedView>
@@ -80,13 +104,17 @@ export function MealEntry({ entry, onDelete, onEdit }: MealEntryProps) {
 
         {entry.notes && (
           <ThemedView style={styles.notesContainer}>
-            <ThemedText style={styles.notes}>{entry.notes}</ThemedText>
+            <ThemedText style={[styles.notes, { color: subtleTextColor }]}>
+              {entry.notes}
+            </ThemedText>
           </ThemedView>
         )}
       </ThemedView>
 
       {/* Timeline line on the right */}
-      <ThemedView style={styles.timelineLine} />
+      <ThemedView
+        style={[styles.timelineLine, { backgroundColor: timelineColor }]}
+      />
     </ThemedView>
   );
 
@@ -123,7 +151,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     marginRight: 12,
@@ -159,12 +186,10 @@ const styles = StyleSheet.create({
   categoryLabel: {
     fontSize: 16,
     marginBottom: 2,
-    color: "#000",
   },
   timestamp: {
     fontSize: 14,
     opacity: 0.7,
-    color: "#666",
   },
   categoryDot: {
     width: 12,
@@ -180,7 +205,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.8,
     fontStyle: "italic",
-    color: "#666",
   },
   timelineLine: {
     position: "absolute",
@@ -188,7 +212,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 3,
-    backgroundColor: "#E0E0E0",
   },
   deleteAction: {
     backgroundColor: "#FF3B30",

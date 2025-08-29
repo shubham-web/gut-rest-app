@@ -61,21 +61,6 @@ export default function TimelineScreen() {
             <ThemedText style={styles.statsText}>
               {todayEntries.length}{" "}
               {todayEntries.length === 1 ? "entry" : "entries"}
-              {todaySummary.gaps.length > 0 && (
-                <ThemedText style={styles.statsText}>
-                  {" • "}Average gap:{" "}
-                  {todaySummary.gaps.length > 0
-                    ? Math.round(
-                        todaySummary.gaps.reduce(
-                          (sum, gap) => sum + gap.durationMs,
-                          0
-                        ) /
-                          todaySummary.gaps.length /
-                          (1000 * 60)
-                      ) + "m"
-                    : "N/A"}
-                </ThemedText>
-              )}
             </ThemedText>
           </ThemedView>
         )}

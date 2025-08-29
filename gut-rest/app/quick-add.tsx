@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   ScrollView,
@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as Haptics from "expo-haptics";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -15,17 +15,23 @@ import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { CategoryGrid, TimeSelector } from "@/components/quick-add";
 import { useMealData } from "@/contexts/MealDataContext";
-import { MealCategory } from "@/types";
+import { MealCategory, MealEntry } from "@/types";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function QuickAddModal() {
+  const params = useLocalSearchParams<{ editEntryId?: string }>();
+  const editEntryId = params.editEntryId;
+  const isEditMode = !!editEntryId;
+
   const [selectedCategory, setSelectedCategory] = useState<MealCategory | null>(
     null
   );
   const [selectedTime, setSelectedTime] = useState(new Date());
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<MealEntry | null>(null);
 
-  const { addMealEntry, error } = useMealData();
+  const { addMealEntry, updateMealEntry, todayEntries, error } = useMealData();
 
   const primaryColor = useThemeColor(
     { light: "#007AFF", dark: "#0A84FF" },
@@ -40,6 +46,37 @@ export default function QuickAddModal() {
     { light: "rgba(128, 128, 128, 0.4)", dark: "rgba(128, 128, 128, 0.6)" },
     "text"
   );
+
+  // Load existing entry data when in edit mode
+  useEffect(() => {
+    if (isEditMode && editEntryId) {
+      setIsLoading(true);
+
+      // Find the entry from today's entries
+      const existingEntry = todayEntries.find(
+        (entry) => entry.id === editEntryId
+      );
+
+      if (existingEntry) {
+        setEditingEntry(existingEntry);
+        setSelectedCategory(existingEntry.category);
+        setSelectedTime(new Date(existingEntry.timestamp));
+        console.log(
+          "[QuickAdd] Loaded existing entry for editing:",
+          existingEntry
+        );
+      } else {
+        console.warn("[QuickAdd] Could not find entry to edit:", editEntryId);
+        Alert.alert(
+          "Entry Not Found",
+          "The entry you're trying to edit could not be found. It may have been deleted.",
+          [{ text: "OK", onPress: () => router.back() }]
+        );
+      }
+
+      setIsLoading(false);
+    }
+  }, [isEditMode, editEntryId, todayEntries]);
 
   const handleCategorySelect = useCallback((categoryId: MealCategory) => {
     setSelectedCategory(categoryId);
@@ -65,25 +102,55 @@ export default function QuickAddModal() {
       // Add haptic feedback for success
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      // Add the meal entry
-      const result = await addMealEntry(
-        selectedCategory,
-        selectedTime.getTime()
-      );
+      if (isEditMode && editingEntry) {
+        // Update existing entry
+        const updates = {
+          category: selectedCategory,
+          timestamp: selectedTime.getTime(),
+          // Update date if timestamp changed to a different date
+          date: selectedTime.toISOString().split("T")[0],
+        };
 
-      if (result.success && !result.isToday) {
-        // Show feedback for back-logged entries
-        const entryDate = new Date(result.entryDate).toLocaleDateString([], {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        });
+        await updateMealEntry(editingEntry.id, updates);
 
-        Alert.alert(
-          "Entry Saved",
-          `Your meal was saved to ${entryDate}. Back-logged entries don't appear in today's timeline but are stored in your history.`,
-          [{ text: "Got it" }]
+        // Check if the date changed
+        const originalDate = new Date(
+          editingEntry.timestamp
+        ).toLocaleDateString();
+        const newDate = selectedTime.toLocaleDateString();
+
+        if (originalDate !== newDate) {
+          Alert.alert(
+            "Entry Updated",
+            `Your meal entry was moved to ${newDate} due to the time change.`,
+            [{ text: "Got it" }]
+          );
+        }
+
+        console.log("[QuickAdd] Entry updated successfully:", editingEntry.id);
+      } else {
+        // Add new meal entry
+        const result = await addMealEntry(
+          selectedCategory,
+          selectedTime.getTime()
         );
+
+        if (result.success && !result.isToday) {
+          // Show feedback for back-logged entries
+          const entryDate = new Date(result.entryDate).toLocaleDateString([], {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          });
+
+          Alert.alert(
+            "Entry Saved",
+            `Your meal was saved to ${entryDate}. Back-logged entries don't appear in today's timeline but are stored in your history.`,
+            [{ text: "Got it" }]
+          );
+        }
+
+        console.log("[QuickAdd] Entry added successfully");
       }
 
       // Navigate back with success
@@ -94,22 +161,38 @@ export default function QuickAddModal() {
       // Error haptic feedback
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
-      Alert.alert("Error", "Failed to save your meal. Please try again.", [
+      const action = isEditMode ? "update" : "save";
+      Alert.alert("Error", `Failed to ${action} your meal. Please try again.`, [
         { text: "OK" },
       ]);
     } finally {
       setIsSaving(false);
     }
-  }, [selectedCategory, selectedTime, addMealEntry]);
+  }, [
+    selectedCategory,
+    selectedTime,
+    addMealEntry,
+    updateMealEntry,
+    isEditMode,
+    editingEntry,
+  ]);
 
   const handleCancel = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    if (selectedCategory) {
-      // Show confirmation if user has made selections
+    // Check if there are unsaved changes
+    const hasChanges = isEditMode
+      ? editingEntry &&
+        (selectedCategory !== editingEntry.category ||
+          selectedTime.getTime() !== editingEntry.timestamp)
+      : selectedCategory !== null;
+
+    if (hasChanges) {
+      // Show confirmation if user has made changes
+      const action = isEditMode ? "editing" : "adding";
       Alert.alert(
         "Discard Changes?",
-        "Are you sure you want to cancel? Your selection will be lost.",
+        `Are you sure you want to cancel ${action}? Your changes will be lost.`,
         [
           { text: "Keep Editing", style: "cancel" },
           {
@@ -122,9 +205,21 @@ export default function QuickAddModal() {
     } else {
       router.back();
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedTime, isEditMode, editingEntry]);
 
-  const isSaveEnabled = selectedCategory && !isSaving;
+  const isSaveEnabled = selectedCategory && !isSaving && !isLoading;
+
+  // Show loading state while loading entry data
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor }]}>
+        <ThemedView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={primaryColor} />
+          <ThemedText style={styles.loadingText}>Loading entry...</ThemedText>
+        </ThemedView>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -143,7 +238,7 @@ export default function QuickAddModal() {
         </Pressable>
 
         <ThemedText type="title" style={styles.title}>
-          Quick Add Meal
+          {isEditMode ? "Edit Entry" : "Quick Add Meal"}
         </ThemedText>
 
         <Pressable
@@ -159,7 +254,9 @@ export default function QuickAddModal() {
           {isSaving ? (
             <ActivityIndicator size="small" color="white" />
           ) : (
-            <ThemedText style={styles.saveButtonText}>Save</ThemedText>
+            <ThemedText style={styles.saveButtonText}>
+              {isEditMode ? "Update" : "Save"}
+            </ThemedText>
           )}
         </Pressable>
       </ThemedView>
@@ -187,17 +284,33 @@ export default function QuickAddModal() {
           {/* Quick Tips */}
           <ThemedView style={styles.tipsContainer}>
             <ThemedText type="default" style={styles.tipsTitle}>
-              💡 Quick Tips
+              💡 {isEditMode ? "Edit Tips" : "Quick Tips"}
             </ThemedText>
-            <ThemedText style={styles.tipsText}>
-              • Log meals as soon as possible for accuracy
-            </ThemedText>
-            <ThemedText style={styles.tipsText}>
-              • Water intake helps with digestion tracking
-            </ThemedText>
-            <ThemedText style={styles.tipsText}>
-              • Consistent logging improves insights
-            </ThemedText>
+            {isEditMode ? (
+              <>
+                <ThemedText style={styles.tipsText}>
+                  • Changing time may move entry to a different date
+                </ThemedText>
+                <ThemedText style={styles.tipsText}>
+                  • Category changes affect your meal patterns
+                </ThemedText>
+                <ThemedText style={styles.tipsText}>
+                  • Updated entries recalculate fasting windows
+                </ThemedText>
+              </>
+            ) : (
+              <>
+                <ThemedText style={styles.tipsText}>
+                  • Log meals as soon as possible for accuracy
+                </ThemedText>
+                <ThemedText style={styles.tipsText}>
+                  • Water intake helps with digestion tracking
+                </ThemedText>
+                <ThemedText style={styles.tipsText}>
+                  • Consistent logging improves insights
+                </ThemedText>
+              </>
+            )}
           </ThemedView>
 
           {/* Error Display */}
@@ -226,7 +339,9 @@ export default function QuickAddModal() {
             </ThemedText>
           ) : (
             <ThemedText style={[styles.summaryText, { opacity: 0.6 }]}>
-              Choose a category to continue
+              {isEditMode
+                ? "Select a category to update"
+                : "Choose a category to continue"}
             </ThemedText>
           )}
         </ThemedView>
@@ -332,5 +447,15 @@ const styles = StyleSheet.create({
   summaryCategory: {
     fontWeight: "600",
     textTransform: "capitalize",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    opacity: 0.7,
   },
 });
