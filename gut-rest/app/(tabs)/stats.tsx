@@ -4,22 +4,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import {
-  FastingStatus,
-  DailySummary,
-  FastingTracker,
-  StatCard,
-} from "@/components/stats";
+import { FastingStatus, FastingTracker } from "@/components/stats";
 import { useMealData } from "@/contexts/MealDataContext";
 import { databaseService } from "@/services/database";
 import { MealEntry } from "@/types";
 import { GlobalStyles } from "@/styles/globals";
 import { doesCategoryBreakFasting } from "@/constants/MealCategories";
+import { getYesterdayDateString } from "@/services/dateUtils";
 
 export default function StatsScreen() {
   const {
     todayEntries,
-    todaySummary,
     isLoading: contextLoading,
     error: contextError,
     refreshData,
@@ -32,10 +27,8 @@ export default function StatsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getYesterdayDateString = useCallback(() => {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday.toISOString().split("T")[0];
+  const getYesterdayLocalDateString = useCallback(() => {
+    return getYesterdayDateString(); // Use local time instead of UTC
   }, []);
 
   const loadHistoricalData = useCallback(async () => {
@@ -43,7 +36,7 @@ export default function StatsScreen() {
       setHistoricalLoading(true);
       setError(null);
 
-      const yesterdayDate = getYesterdayDateString();
+      const yesterdayDate = getYesterdayLocalDateString();
       const yesterdayEntries = await databaseService.getMealEntriesByDate(
         yesterdayDate
       );
@@ -68,7 +61,7 @@ export default function StatsScreen() {
     } finally {
       setHistoricalLoading(false);
     }
-  }, [getYesterdayDateString]);
+  }, [getYesterdayLocalDateString]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -112,6 +105,7 @@ export default function StatsScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -143,81 +137,12 @@ export default function StatsScreen() {
             fastingGoalHours={16}
           />
 
-          {/* Today's Summary */}
-          <DailySummary summary={todaySummary} isLoading={isLoading} />
-
           {/* Overnight Fasting Tracker */}
           <FastingTracker
             lastEntryYesterday={yesterdayLastMeal}
             firstEntryToday={firstMealToday}
             isLoading={isLoading}
           />
-
-          {/* Weekly Overview Placeholder */}
-          <StatCard
-            title="Weekly Overview"
-            value=""
-            isEmpty={true}
-            emptyText="Coming Soon"
-            centerContent={true}
-          >
-            <ThemedView style={styles.chartPlaceholder}>
-              <ThemedText type="default" style={styles.chartPlaceholderText}>
-                📊 Weekly patterns and trends
-              </ThemedText>
-              <ThemedText type="default" style={styles.chartPlaceholderSubtext}>
-                Chart visualization coming in future updates
-              </ThemedText>
-            </ThemedView>
-          </StatCard>
-
-          {/* Quick Stats Grid */}
-          {todaySummary && todaySummary.entries.length > 0 && (
-            <ThemedView style={styles.quickStatsContainer}>
-              <ThemedText type="subtitle" style={styles.quickStatsTitle}>
-                Quick Stats
-              </ThemedText>
-              <ThemedView style={styles.quickStatsGrid}>
-                <ThemedView style={styles.quickStatCard}>
-                  <ThemedText type="title" style={styles.quickStatNumber}>
-                    {todaySummary.gaps.length}
-                  </ThemedText>
-                  <ThemedText type="default" style={styles.quickStatLabel}>
-                    Gaps Today
-                  </ThemedText>
-                </ThemedView>
-
-                <ThemedView style={styles.quickStatCard}>
-                  <ThemedText type="title" style={styles.quickStatNumber}>
-                    {todaySummary.fastingWindow?.isIntermittentFasting
-                      ? "✅"
-                      : "⏳"}
-                  </ThemedText>
-                  <ThemedText type="default" style={styles.quickStatLabel}>
-                    IF Goal
-                  </ThemedText>
-                </ThemedView>
-
-                <ThemedView style={styles.quickStatCard}>
-                  <ThemedText type="title" style={styles.quickStatNumber}>
-                    {todaySummary.firstIntake && todaySummary.lastIntake
-                      ? new Date(todaySummary.firstIntake).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "numeric",
-                            minute: "2-digit",
-                            hour12: true,
-                          }
-                        )
-                      : "--"}
-                  </ThemedText>
-                  <ThemedText type="default" style={styles.quickStatLabel}>
-                    First Meal
-                  </ThemedText>
-                </ThemedView>
-              </ThemedView>
-            </ThemedView>
-          )}
 
           {/* Empty State for No Data */}
           {!isLoading && todayEntries.length === 0 && (
@@ -235,6 +160,9 @@ export default function StatsScreen() {
             </ThemedView>
           )}
         </ThemedView>
+
+        {/* Bottom spacing for tab bar */}
+        <ThemedView style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -260,6 +188,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     gap: 16,
   },
+  bottomSpacer: {
+    height: 100, // Space for tab bar
+  },
   errorCard: {
     ...GlobalStyles.card,
     backgroundColor: "rgba(255, 99, 99, 0.1)",
@@ -278,48 +209,6 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     fontSize: 12,
     color: "#FF6B6B",
-  },
-  chartPlaceholder: {
-    alignItems: "center",
-    paddingVertical: 20,
-  },
-  chartPlaceholderText: {
-    opacity: 0.8,
-    marginBottom: 8,
-    fontSize: 16,
-  },
-  chartPlaceholderSubtext: {
-    opacity: 0.6,
-    fontSize: 12,
-    textAlign: "center",
-  },
-  quickStatsContainer: {
-    marginTop: 8,
-  },
-  quickStatsTitle: {
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  quickStatsGrid: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  quickStatCard: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "rgba(128, 128, 128, 0.08)",
-    borderRadius: 8,
-    padding: 16,
-  },
-  quickStatNumber: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  quickStatLabel: {
-    opacity: 0.7,
-    fontSize: 12,
-    textAlign: "center",
   },
   emptyStateContainer: {
     alignItems: "center",

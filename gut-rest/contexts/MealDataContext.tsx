@@ -7,6 +7,10 @@ import React, {
 } from "react";
 import { MealEntry, DailySummary, MealCategory } from "@/types";
 import { databaseService } from "@/services/database";
+import {
+  getTodayDateString,
+  getDateStringFromTimestamp,
+} from "@/services/dateUtils";
 
 interface MealDataState {
   todayEntries: MealEntry[];
@@ -98,8 +102,8 @@ const MealDataContext = createContext<MealDataContextType | undefined>(
 export function MealDataProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(mealDataReducer, initialState);
 
-  const getTodayDateString = useCallback(() => {
-    return new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+  const getTodayLocalDateString = useCallback(() => {
+    return getTodayDateString(); // Use local time instead of UTC
   }, []);
 
   const loadTodayData = useCallback(async () => {
@@ -110,7 +114,7 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
       // Initialize database if not already done
       await databaseService.initialize();
 
-      const todayDate = getTodayDateString();
+      const todayDate = getTodayLocalDateString();
       const entries = await databaseService.getMealEntriesByDate(todayDate);
       const summary = await databaseService.getDailySummary(todayDate);
 
@@ -122,7 +126,7 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [getTodayDateString]);
+  }, [getTodayLocalDateString]);
 
   const addMealEntry = useCallback(
     async (category: MealCategory, timestamp?: number, notes?: string) => {
@@ -133,9 +137,9 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
         await databaseService.initialize();
 
         const now = timestamp || Date.now();
-        // Extract date from the provided timestamp, not today's date
-        const entryDate = new Date(now).toISOString().split("T")[0];
-        const todayDate = getTodayDateString();
+        // Extract date from the provided timestamp using local time
+        const entryDate = getDateStringFromTimestamp(now);
+        const todayDate = getTodayLocalDateString();
         const isToday = entryDate === todayDate;
 
         const entryData = {
@@ -168,7 +172,7 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [getTodayDateString, loadTodayData]
+    [getTodayLocalDateString, loadTodayData]
   );
 
   const updateMealEntry = useCallback(

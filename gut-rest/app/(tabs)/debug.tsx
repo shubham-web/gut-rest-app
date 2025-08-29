@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Table, Row, Rows } from "react-native-table-component";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -114,8 +115,41 @@ export default function DebugScreen() {
     </ThemedView>
   );
 
+  const calculateColumnWidth = (
+    columnName: string,
+    data: TableData
+  ): number => {
+    // Calculate width based on column name and sample data
+    let maxLength = columnName.length;
+    const sampleRows = data.rows.slice(0, 10);
+
+    for (const row of sampleRows) {
+      const cellContent = row[columnName];
+      if (cellContent) {
+        maxLength = Math.max(maxLength, String(cellContent).length);
+      }
+    }
+
+    // Convert to pixel width with some padding
+    return Math.min(Math.max(maxLength * 8 + 24, 80), 200);
+  };
+
   const renderTableData = (data: TableData) => {
     const isExpanded = expandedTables.has(data.tableName);
+
+    // Calculate column widths
+    const columnWidths = data.columns.map((col) =>
+      calculateColumnWidth(col, data)
+    );
+
+    // Prepare data for react-native-table-component
+    const tableHead = data.columns;
+    const tableData = data.rows.slice(0, 50).map((row) =>
+      data.columns.map((col) => {
+        const value = row[col];
+        return value !== null && value !== undefined ? String(value) : "NULL";
+      })
+    );
 
     return (
       <ThemedView key={`data-${data.tableName}`} style={styles.tableContainer}>
@@ -144,48 +178,36 @@ export default function DebugScreen() {
               </ThemedView>
             )}
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={true}>
-              <ThemedView>
-                {/* Header Row */}
-                {data.columns.length > 0 && (
-                  <ThemedView style={styles.dataRow}>
-                    {data.columns.map((col, index) => (
-                      <ThemedView key={index} style={styles.dataCell}>
-                        <ThemedText
-                          type="default"
-                          style={[styles.dataCellText, styles.headerCell]}
-                        >
-                          {col}
-                        </ThemedText>
-                      </ThemedView>
-                    ))}
-                  </ThemedView>
-                )}
+            {data.columns.length > 0 && (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={true}
+                style={styles.tableScrollView}
+              >
+                <Table borderStyle={styles.tableBorder}>
+                  <Row
+                    data={tableHead}
+                    style={styles.tableHead}
+                    textStyle={styles.tableHeadText}
+                    widthArr={columnWidths}
+                  />
+                  <Rows
+                    data={tableData}
+                    textStyle={styles.tableText}
+                    style={styles.tableRow}
+                    widthArr={columnWidths}
+                  />
+                </Table>
+              </ScrollView>
+            )}
 
-                {/* Data Rows */}
-                {data.rows.slice(0, 50).map((row, rowIndex) => (
-                  <ThemedView key={rowIndex} style={styles.dataRow}>
-                    {data.columns.map((col, colIndex) => (
-                      <ThemedView key={colIndex} style={styles.dataCell}>
-                        <ThemedText type="default" style={styles.dataCellText}>
-                          {row[col] !== null && row[col] !== undefined
-                            ? String(row[col])
-                            : "NULL"}
-                        </ThemedText>
-                      </ThemedView>
-                    ))}
-                  </ThemedView>
-                ))}
-
-                {data.rows.length > 50 && (
-                  <ThemedView style={styles.truncatedMessage}>
-                    <ThemedText type="default" style={styles.truncatedText}>
-                      ... and {data.rows.length - 50} more rows
-                    </ThemedText>
-                  </ThemedView>
-                )}
+            {data.rows.length > 50 && (
+              <ThemedView style={styles.truncatedMessage}>
+                <ThemedText type="default" style={styles.truncatedText}>
+                  ... and {data.rows.length - 50} more rows (showing first 50)
+                </ThemedText>
               </ThemedView>
-            </ScrollView>
+            )}
           </>
         )}
       </ThemedView>
@@ -204,6 +226,7 @@ export default function DebugScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        contentInsetAdjustmentBehavior="automatic"
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
@@ -301,6 +324,9 @@ export default function DebugScreen() {
             </ThemedView>
           )}
         </ThemedView>
+
+        {/* Bottom spacing for tab bar */}
+        <ThemedView style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -325,6 +351,9 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 10,
     gap: 16,
+  },
+  bottomSpacer: {
+    height: 100, // Space for tab bar
   },
   errorCard: {
     backgroundColor: "rgba(255, 99, 99, 0.1)",
@@ -423,34 +452,50 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     fontSize: 12,
   },
-  dataRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(128, 128, 128, 0.1)",
-    minHeight: 40,
+  tableScrollView: {
+    marginVertical: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    borderRadius: 8,
   },
-  dataCell: {
-    minWidth: 120,
-    padding: 8,
-    justifyContent: "center",
-    borderRightWidth: 1,
-    borderRightColor: "rgba(128, 128, 128, 0.1)",
+  tableBorder: {
+    borderWidth: 1,
+    borderColor: "rgba(128, 128, 128, 0.2)",
   },
-  dataCellText: {
+  tableHead: {
+    height: 50,
+    backgroundColor: "rgba(128, 128, 128, 0.1)",
+  },
+  tableHeadText: {
     fontSize: 12,
-    fontFamily: "monospace",
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingHorizontal: 8,
+    textTransform: "uppercase" as const,
+    paddingVertical: 4,
   },
-  headerCell: {
-    fontWeight: "600",
-    opacity: 0.9,
+  tableRow: {
+    height: 40,
+  },
+  tableText: {
+    fontSize: 11,
+    textAlign: "center",
+    paddingHorizontal: 8,
+    fontFamily: "monospace",
+    paddingVertical: 4,
   },
   truncatedMessage: {
     padding: 16,
     alignItems: "center",
+    backgroundColor: "rgba(128, 128, 128, 0.05)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(128, 128, 128, 0.1)",
+    borderRadius: 4,
+    marginTop: 8,
   },
   truncatedText: {
-    opacity: 0.6,
+    opacity: 0.7,
     fontStyle: "italic",
+    fontSize: 12,
   },
   emptyState: {
     alignItems: "center",

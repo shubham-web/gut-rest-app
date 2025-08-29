@@ -17,7 +17,6 @@ import { CategoryGrid, TimeSelector } from "@/components/quick-add";
 import { useMealData } from "@/contexts/MealDataContext";
 import { MealCategory } from "@/types";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { GlobalStyles } from "@/styles/globals";
 
 export default function QuickAddModal() {
   const [selectedCategory, setSelectedCategory] = useState<MealCategory | null>(

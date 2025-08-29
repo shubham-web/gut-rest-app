@@ -8,6 +8,11 @@ import {
   DatabaseResult,
   AppError,
 } from "../types";
+import {
+  getLocalDateString,
+  createDateRange,
+  getDateStringWithOffset,
+} from "./dateUtils";
 
 /**
  * SQLite database service implementation for GutRest app
@@ -308,11 +313,9 @@ class DatabaseServiceImpl implements DatabaseService {
     const summaries: DailySummary[] = [];
     const start = new Date(startDate);
 
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(start);
-      currentDate.setDate(start.getDate() + i);
-      const dateStr = currentDate.toISOString().split("T")[0];
+    const dateStrings = createDateRange(startDate, 7);
 
+    for (const dateStr of dateStrings) {
       const summary = await this.getDailySummary(dateStr);
       summaries.push(summary);
     }
@@ -448,10 +451,8 @@ class DatabaseServiceImpl implements DatabaseService {
     date: string,
     todayEntries: MealEntry[]
   ): Promise<FastingWindow | undefined> {
-    // Get yesterday's date
-    const yesterday = new Date(date);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split("T")[0];
+    // Get yesterday's date using local time
+    const yesterdayStr = getDateStringWithOffset(date, -1);
 
     try {
       const yesterdayEntries = await this.getMealEntriesByDate(yesterdayStr);

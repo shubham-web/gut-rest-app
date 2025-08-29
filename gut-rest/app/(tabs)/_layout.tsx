@@ -32,12 +32,12 @@ export default function TabLayout() {
         options={{
           title: "Timeline",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="timeline.selection" color={color} />
+            <IconSymbol size={28} name="fork.knife" color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="stats"
         options={{
           title: "Stats",
           tabBarIcon: ({ color }) => (
