@@ -37,8 +37,6 @@ This lightweight approach ensures long-term usability without overwhelming the u
 
 ### 4. **Current Features**
 
-#### **Must Have (V1.0)**
-
 **Screens & Features**:
 
 1. **Home (Timeline Screen)**
