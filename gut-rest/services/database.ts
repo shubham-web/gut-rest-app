@@ -5,14 +5,9 @@ import {
   DailySummary,
   TimeGap,
   FastingWindow,
-  DatabaseResult,
   AppError,
 } from "../types";
-import {
-  getLocalDateString,
-  createDateRange,
-  getDateStringWithOffset,
-} from "./dateUtils";
+import { createDateRange, getDateStringWithOffset } from "./dateUtils";
 
 /**
  * SQLite database service implementation for GutRest app
@@ -288,6 +283,33 @@ class DatabaseServiceImpl implements DatabaseService {
             "Failed to delete meal entry",
             error
           );
+    }
+  }
+
+  /**
+   * Get a single meal entry by ID
+   */
+  async getMealEntryById(id: string): Promise<MealEntry | null> {
+    if (!this.db) throw new Error("Database not initialized");
+
+    try {
+      const rows = await this.db.getAllAsync(
+        "SELECT * FROM meal_entries WHERE id = ?",
+        [id]
+      );
+
+      if (rows.length === 0) {
+        return null;
+      }
+
+      return this.mapRowToMealEntry(rows[0]);
+    } catch (error) {
+      console.error("[Database] Get meal entry by ID failed:", error);
+      throw this.createError(
+        "QUERY_FAILED",
+        "Failed to retrieve meal entry by ID",
+        error
+      );
     }
   }
 

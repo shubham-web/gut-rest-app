@@ -6,7 +6,6 @@ import { ThemedView } from "@/components/ThemedView";
 import { CategoryButton } from "./CategoryButton";
 import { MealCategory, CategoryConfig } from "@/types";
 import { getSortedCategories } from "@/constants/MealCategories";
-import { GlobalStyles } from "@/styles/globals";
 
 interface CategoryGridProps {
   selectedCategory: MealCategory | null;

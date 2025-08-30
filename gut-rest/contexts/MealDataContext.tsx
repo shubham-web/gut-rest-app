@@ -7,10 +7,7 @@ import React, {
 } from "react";
 import { MealEntry, DailySummary, MealCategory } from "@/types";
 import { databaseService } from "@/services/database";
-import {
-  getTodayDateString,
-  getDateStringFromTimestamp,
-} from "@/services/dateUtils";
+import { getTodayDateString } from "@/services/dateUtils";
 
 interface MealDataState {
   todayEntries: MealEntry[];
@@ -86,9 +83,10 @@ interface MealDataContextType {
     category: MealCategory,
     timestamp?: number,
     notes?: string
-  ) => Promise<{ success: boolean; isToday: boolean }>;
+  ) => Promise<{ success: boolean; mealEntry: MealEntry; isToday: boolean }>;
   updateMealEntry: (id: string, updates: Partial<MealEntry>) => Promise<void>;
   deleteMealEntry: (id: string) => Promise<void>;
+  getMealEntryById: (id: string) => Promise<MealEntry | null>;
 
   // Utility
   refreshData: () => Promise<void>;
@@ -166,6 +164,7 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
         // Return simplified information
         return {
           success: true,
+          mealEntry: newEntry,
           isToday,
         };
       } catch (error) {
@@ -241,6 +240,21 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
     [loadTodayData]
   );
 
+  const getMealEntryById = useCallback(
+    async (id: string): Promise<MealEntry | null> => {
+      try {
+        // Initialize database if not already done
+        await databaseService.initialize();
+        return await databaseService.getMealEntryById(id);
+      } catch (error) {
+        console.error("Failed to get meal entry by ID:", error);
+        dispatch({ type: "SET_ERROR", payload: "Failed to get meal entry" });
+        return null;
+      }
+    },
+    []
+  );
+
   const refreshData = useCallback(async () => {
     await loadTodayData();
   }, [loadTodayData]);
@@ -267,6 +281,7 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
     addMealEntry,
     updateMealEntry,
     deleteMealEntry,
+    getMealEntryById,
 
     // Utility
     refreshData,

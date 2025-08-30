@@ -157,22 +157,6 @@ export default function StatsScreen() {
               isLoading={isLoading}
             />
           )}
-
-          {/* Empty State for No Data */}
-          {!isLoading && todayEntries.length === 0 && (
-            <ThemedView style={styles.emptyStateContainer}>
-              <ThemedText type="title" style={styles.emptyStateEmoji}>
-                🍽️
-              </ThemedText>
-              <ThemedText type="subtitle" style={styles.emptyStateTitle}>
-                No meals logged today
-              </ThemedText>
-              <ThemedText type="default" style={styles.emptyStateDescription}>
-                Start logging your meals to see detailed insights about your
-                eating patterns and fasting windows.
-              </ThemedText>
-            </ThemedView>
-          )}
         </ThemedView>
 
         {/* Bottom spacing for tab bar */}

@@ -31,7 +31,13 @@ export default function QuickAddModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [editingEntry, setEditingEntry] = useState<MealEntry | null>(null);
 
-  const { addMealEntry, updateMealEntry, todayEntries, error } = useMealData();
+  const {
+    addMealEntry,
+    updateMealEntry,
+    getMealEntryById,
+    todayEntries,
+    error,
+  } = useMealData();
 
   const primaryColor = useThemeColor(
     { light: "#007AFF", dark: "#0A84FF" },
@@ -49,34 +55,48 @@ export default function QuickAddModal() {
 
   // Load existing entry data when in edit mode
   useEffect(() => {
-    if (isEditMode && editEntryId) {
-      setIsLoading(true);
+    const loadEditEntry = async () => {
+      if (isEditMode && editEntryId) {
+        setIsLoading(true);
 
-      // Find the entry from today's entries
-      const existingEntry = todayEntries.find(
-        (entry) => entry.id === editEntryId
-      );
+        try {
+          // Get the entry from database by ID (works for any date)
+          const existingEntry = await getMealEntryById(editEntryId);
 
-      if (existingEntry) {
-        setEditingEntry(existingEntry);
-        setSelectedCategory(existingEntry.category);
-        setSelectedTime(new Date(existingEntry.timestamp));
-        console.log(
-          "[QuickAdd] Loaded existing entry for editing:",
-          existingEntry
-        );
-      } else {
-        console.warn("[QuickAdd] Could not find entry to edit:", editEntryId);
-        Alert.alert(
-          "Entry Not Found",
-          "The entry you're trying to edit could not be found. It may have been deleted.",
-          [{ text: "OK", onPress: () => router.back() }]
-        );
+          if (existingEntry) {
+            setEditingEntry(existingEntry);
+            setSelectedCategory(existingEntry.category);
+            setSelectedTime(new Date(existingEntry.timestamp));
+            console.log(
+              "[QuickAdd] Loaded existing entry for editing:",
+              existingEntry
+            );
+          } else {
+            console.warn(
+              "[QuickAdd] Could not find entry to edit:",
+              editEntryId
+            );
+            Alert.alert(
+              "Entry Not Found",
+              "The entry you're trying to edit could not be found. It may have been deleted.",
+              [{ text: "OK", onPress: () => router.back() }]
+            );
+          }
+        } catch (error) {
+          console.error("[QuickAdd] Failed to load entry for editing:", error);
+          Alert.alert(
+            "Error",
+            "Failed to load the entry for editing. Please try again.",
+            [{ text: "OK", onPress: () => router.back() }]
+          );
+        } finally {
+          setIsLoading(false);
+        }
       }
+    };
 
-      setIsLoading(false);
-    }
-  }, [isEditMode, editEntryId, todayEntries]);
+    loadEditEntry();
+  }, [isEditMode, editEntryId, getMealEntryById]);
 
   const handleCategorySelect = useCallback((categoryId: MealCategory) => {
     setSelectedCategory(categoryId);
@@ -107,8 +127,6 @@ export default function QuickAddModal() {
         const updates = {
           category: selectedCategory,
           timestamp: selectedTime.getTime(),
-          // Update date if timestamp changed to a different date
-          date: selectedTime.toISOString().split("T")[0],
         };
 
         await updateMealEntry(editingEntry.id, updates);
@@ -137,7 +155,9 @@ export default function QuickAddModal() {
 
         if (result.success && !result.isToday) {
           // Show feedback for back-logged entries
-          const entryDate = new Date(result.entryDate).toLocaleDateString([], {
+          const entryDate = new Date(
+            result.mealEntry.timestamp
+          ).toLocaleDateString([], {
             weekday: "short",
             month: "short",
             day: "numeric",
