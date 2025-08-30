@@ -1,4 +1,4 @@
-export { MealEntry } from "./MealEntry";
-export { TimeGap } from "./TimeGap";
-export { EmptyTimeline } from "./EmptyTimeline";
 export { TimelineList } from "./TimelineList";
+export { MealEntry } from "./MealEntry";
+export { TimeMarker } from "./TimeMarker";
+export { EmptyTimeline } from "./EmptyTimeline";

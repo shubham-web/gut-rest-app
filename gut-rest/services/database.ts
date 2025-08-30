@@ -8,6 +8,7 @@ import {
   AppError,
 } from "../types";
 import { createDateRange, getDateStringWithOffset } from "./dateUtils";
+import { doesCategoryBreakFasting } from "../constants/MealCategories";
 
 /**
  * SQLite database service implementation for GutRest app
@@ -553,13 +554,25 @@ class DatabaseServiceImpl implements DatabaseService {
     try {
       const yesterdayEntries = await this.getMealEntriesByDate(yesterdayStr);
 
-      if (yesterdayEntries.length === 0 || todayEntries.length === 0) {
+      // Filter for fasting-breaking meals only (exclude water)
+      const yesterdayFastingBreakingMeals = yesterdayEntries.filter((entry) =>
+        doesCategoryBreakFasting(entry.category)
+      );
+      const todayFastingBreakingMeals = todayEntries.filter((entry) =>
+        doesCategoryBreakFasting(entry.category)
+      );
+
+      if (
+        yesterdayFastingBreakingMeals.length === 0 ||
+        todayFastingBreakingMeals.length === 0
+      ) {
         return undefined;
       }
 
       const lastIntakeYesterday =
-        yesterdayEntries[yesterdayEntries.length - 1].timestamp;
-      const firstIntakeToday = todayEntries[0].timestamp;
+        yesterdayFastingBreakingMeals[yesterdayFastingBreakingMeals.length - 1]
+          .timestamp;
+      const firstIntakeToday = todayFastingBreakingMeals[0].timestamp;
       const durationMs = firstIntakeToday - lastIntakeYesterday;
 
       return {

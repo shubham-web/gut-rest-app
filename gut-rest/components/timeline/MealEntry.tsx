@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, Pressable, Alert } from "react-native";
-import { Swipeable } from "react-native-gesture-handler";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -13,25 +12,29 @@ interface MealEntryProps {
   entry: MealEntryType;
   onDelete?: (id: string) => void;
   onEdit?: (entry: MealEntryType) => void;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
-export function MealEntry({ entry, onDelete, onEdit }: MealEntryProps) {
+export function MealEntry({
+  entry,
+  onDelete,
+  onEdit,
+  isFirst = false,
+  isLast = false,
+}: MealEntryProps) {
   const colorScheme = useColorScheme();
   const categoryConfig = getCategoryConfig(entry.category);
 
   // Theme colors
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
-  const cardBackground = useThemeColor(
-    { light: "#FFFFFF", dark: "#2C2C2E" },
-    "background"
-  );
   const subtleTextColor = useThemeColor(
-    { light: "#666", dark: "#A0A0A0" },
+    { light: "#8E8E93", dark: "#8E8E93" },
     "text"
   );
   const timelineColor = useThemeColor(
-    { light: "#E0E0E0", dark: "#3C3C3E" },
+    { light: "#E5E5E7", dark: "#38383A" },
     "text"
   );
 
@@ -62,174 +65,129 @@ export function MealEntry({ entry, onDelete, onEdit }: MealEntryProps) {
     onEdit?.(entry);
   };
 
-  const renderRightActions = () => (
-    <ThemedView style={styles.deleteAction}>
-      <Pressable style={styles.deleteButton} onPress={handleDelete}>
-        <ThemedText style={styles.deleteText}>Delete</ThemedText>
-      </Pressable>
-    </ThemedView>
-  );
-
   const entryContent = (
-    <ThemedView style={styles.entryWrapper}>
-      <ThemedView
-        style={[styles.container, { backgroundColor: cardBackground }]}
-      >
-        <ThemedView style={styles.header}>
-          <ThemedView style={styles.categoryInfo}>
-            <ThemedText style={styles.categoryIcon}>
-              {categoryConfig.icon}
-            </ThemedText>
-            <ThemedView style={styles.textContainer}>
-              <ThemedText
-                type="defaultSemiBold"
-                style={[styles.categoryLabel, { color: textColor }]}
-              >
-                {categoryConfig.label}
-              </ThemedText>
-              <ThemedText
-                style={[styles.timestamp, { color: subtleTextColor }]}
-              >
-                {formatTime(entry.timestamp)}
-              </ThemedText>
-            </ThemedView>
-          </ThemedView>
-          <ThemedView
-            style={[
-              styles.categoryDot,
-              { backgroundColor: categoryConfig.color },
-            ]}
-          />
-        </ThemedView>
-
-        {entry.notes && (
-          <ThemedView style={styles.notesContainer}>
-            <ThemedText style={[styles.notes, { color: subtleTextColor }]}>
-              {entry.notes}
-            </ThemedText>
-          </ThemedView>
-        )}
+    <ThemedView style={styles.entryRow}>
+      {/* Time Column */}
+      <ThemedView style={styles.timeColumn}>
+        <ThemedText style={[styles.timeText, { color: subtleTextColor }]}>
+          {formatTime(entry.timestamp)}
+        </ThemedText>
       </ThemedView>
 
-      {/* Timeline line on the right */}
-      <ThemedView
-        style={[styles.timelineLine, { backgroundColor: timelineColor }]}
-      />
+      {/* Timeline Dot */}
+      <ThemedView style={styles.dotColumn}>
+        <ThemedView
+          style={[
+            styles.timelineDot,
+            {
+              backgroundColor: categoryConfig.color,
+              borderColor: backgroundColor,
+            },
+          ]}
+        />
+      </ThemedView>
+
+      {/* Content Column */}
+      <ThemedView style={styles.contentColumn}>
+        <ThemedView style={styles.mealContent}>
+          <ThemedText style={styles.mealIcon}>{categoryConfig.icon}</ThemedText>
+          <ThemedView style={styles.mealText}>
+            <ThemedText
+              type="defaultSemiBold"
+              style={[styles.mealLabel, { color: textColor }]}
+            >
+              {categoryConfig.label}
+            </ThemedText>
+            {entry.notes && (
+              <ThemedText
+                style={[styles.mealNotes, { color: subtleTextColor }]}
+                numberOfLines={2}
+              >
+                {entry.notes}
+              </ThemedText>
+            )}
+          </ThemedView>
+        </ThemedView>
+      </ThemedView>
     </ThemedView>
   );
 
-  if (onDelete) {
-    return (
-      <Swipeable renderRightActions={renderRightActions}>
-        <ThemedView style={styles.pressable}>
-          <Pressable onPress={handleEdit} style={styles.swipeableContent}>
-            {entryContent}
-          </Pressable>
-        </ThemedView>
-      </Swipeable>
-    );
-  }
-
   return (
-    <Pressable onPress={handleEdit} style={styles.pressable}>
+    <Pressable
+      onPress={handleEdit}
+      onLongPress={onDelete ? handleDelete : undefined}
+      delayLongPress={500}
+    >
       {entryContent}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  pressable: {
-    marginBottom: Spacing.sm,
-  },
-  swipeableContent: {
-    flex: 1,
-  },
-  entryWrapper: {
+  entryRow: {
     flexDirection: "row",
-    alignItems: "stretch",
-    position: "relative",
+    alignItems: "center",
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    minHeight: 60,
   },
-  container: {
-    flex: 1,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    marginRight: 12,
-    // Clean shadow
+  timeColumn: {
+    width: 80,
+    alignItems: "flex-end",
+    paddingRight: Spacing.md,
+  },
+  timeText: {
+    fontSize: 13,
+    fontWeight: "500",
+    textAlign: "right",
+  },
+  dotColumn: {
+    width: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  timelineDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: "#000000", // This will be overridden by theme
+    zIndex: 3,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 2,
-    elevation: 2,
+    elevation: 3,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  categoryInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+  contentColumn: {
     flex: 1,
+    paddingLeft: Spacing.md,
   },
-  categoryIcon: {
-    fontSize: 24,
+  mealContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  mealIcon: {
+    fontSize: 20,
     marginRight: Spacing.sm,
-    lineHeight: 30,
+    lineHeight: 24,
     includeFontPadding: false,
   },
-  textContainer: {
+  mealText: {
     flex: 1,
   },
-  categoryLabel: {
+  mealLabel: {
     fontSize: 16,
-    marginBottom: 2,
+    lineHeight: 20,
   },
-  timestamp: {
+  mealNotes: {
     fontSize: 14,
     opacity: 0.7,
-  },
-  categoryDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 4,
-  },
-  notesContainer: {
-    marginTop: Spacing.sm,
-    paddingLeft: 32, // Align with text content
-  },
-  notes: {
-    fontSize: 14,
-    opacity: 0.8,
     fontStyle: "italic",
-  },
-  timelineLine: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: 3,
-  },
-  deleteAction: {
-    backgroundColor: "#FF3B30",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 80,
-    borderRadius: BorderRadius.lg,
-    marginLeft: Spacing.sm,
-  },
-  deleteButton: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  deleteText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-    fontSize: 14,
+    marginTop: 2,
+    lineHeight: 18,
   },
 });
