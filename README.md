@@ -1,11 +1,3 @@
-> An app to track intermittent fasting and meal times but paused because apple is asking 99$ to run it on my iPhone :/
-
-<img src="./gut-rest/assets/images/screenshots/1.png" alt="App Screenshot Main Screen" style="max-width:300px;">
-
-<img src="./gut-rest/assets/images/screenshots/2.png" alt="App Screenshot Main Screen" style="max-width:300px;">
-
-<img src="./gut-rest/assets/images/screenshots/3.png" alt="App Screenshot Main Screen" style="max-width:300px;">
-
 # Product Brief: Meal & Fasting Tracker App
 
 Name: GutRest
@@ -21,13 +13,25 @@ Instead of calorie tracking or detailed food diaries, the app focuses on:
 
 This lightweight approach ensures long-term usability without overwhelming the user.
 
+<p align="center">
+    <img src="./gut-rest/assets/images/screenshots/1.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block; margin-right:10px;">
+    <img src="./gut-rest/assets/images/screenshots/2.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block; margin-right:10px;">
+    <img src="./gut-rest/assets/images/screenshots/3.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block;">
+</p>
+
+<p align="center">
+    <video src="./gut-rest/assets/app-demo.mp4" controls style="max-width:400px; display:inline-block;">
+        Your browser does not support the video tag.
+    </video>
+</p>
+
 ---
 
 ### 2. **Target User**
 
 - Individuals interested in **intermittent fasting**.
 - People who want to be mindful of their **meal timing** without calorie counting.
-- Users seeking a **minimalist health tracking tool**.
+- Users seeking a **minimalist meal tracking tool**.
 
 ---
 
