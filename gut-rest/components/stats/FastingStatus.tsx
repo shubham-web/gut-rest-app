@@ -53,10 +53,10 @@ export function FastingStatus({
             --:--
           </ThemedText>
           <ThemedText type="default" style={styles.fastingLabel}>
-            Not fasting
+            Not currently fasting
           </ThemedText>
           <ThemedText type="default" style={styles.suggestion}>
-            Log your next meal to start tracking
+            Log a meal to start tracking your fasting window
           </ThemedText>
         </ThemedView>
       </ThemedView>
@@ -101,13 +101,14 @@ export function FastingStatus({
         <ThemedView style={styles.statusContainer}>
           <ThemedText type="default" style={styles.fastingLabel}>
             {fastingStatus.goalReached
-              ? "Intermittent Fasting Goal Achieved!"
-              : "Fasting in progress"}
+              ? "Intermittent Fasting Goal Achieved! 🎉"
+              : "Currently fasting since your last meal"}
           </ThemedText>
 
           {!fastingStatus.goalReached && (
             <ThemedText type="default" style={styles.timeToGo}>
-              {fastingStatus.timeToGoalFormatted} to goal
+              {fastingStatus.timeToGoalFormatted} until 16h intermittent fasting
+              goal
             </ThemedText>
           )}
 

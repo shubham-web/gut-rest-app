@@ -82,16 +82,28 @@ export default function StatsScreen() {
   const hasError = contextError || error;
 
   // Find the last meal that actually breaks fasting (not water)
+  // Include yesterday's last meal if no fasting-breaking meals today
   const lastFastingBreakingMeal = React.useMemo(() => {
     const fastingBreakingMeals = todayEntries.filter((entry) =>
       doesCategoryBreakFasting(entry.category)
     );
-    return fastingBreakingMeals.length > 0
-      ? fastingBreakingMeals[fastingBreakingMeals.length - 1]
-      : null;
-  }, [todayEntries]);
 
-  const firstMealToday = todayEntries.length > 0 ? todayEntries[0] : null;
+    if (fastingBreakingMeals.length > 0) {
+      // Use today's last fasting-breaking meal
+      return fastingBreakingMeals[fastingBreakingMeals.length - 1];
+    } else {
+      // No fasting-breaking meals today, use yesterday's last meal if available
+      return yesterdayLastMeal;
+    }
+  }, [todayEntries, yesterdayLastMeal]);
+
+  // Find the first meal that actually breaks fasting (not water)
+  const firstMealToday = React.useMemo(() => {
+    const fastingBreakingMeals = todayEntries.filter((entry) =>
+      doesCategoryBreakFasting(entry.category)
+    );
+    return fastingBreakingMeals.length > 0 ? fastingBreakingMeals[0] : null;
+  }, [todayEntries]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,12 +149,14 @@ export default function StatsScreen() {
             fastingGoalHours={16}
           />
 
-          {/* Overnight Fasting Tracker */}
-          <FastingTracker
-            lastEntryYesterday={yesterdayLastMeal}
-            firstEntryToday={firstMealToday}
-            isLoading={isLoading}
-          />
+          {/* Overnight Fasting Tracker - only show if there's a first meal today */}
+          {firstMealToday && (
+            <FastingTracker
+              lastEntryYesterday={yesterdayLastMeal}
+              firstEntryToday={firstMealToday}
+              isLoading={isLoading}
+            />
+          )}
 
           {/* Empty State for No Data */}
           {!isLoading && todayEntries.length === 0 && (

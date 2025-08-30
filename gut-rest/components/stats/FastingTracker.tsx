@@ -143,23 +143,77 @@ export function FastingTracker({
         </ThemedView>
       </ThemedView>
 
-      {/* Additional insights */}
+      {/* Enhanced insights with autophagy information */}
       <ThemedView style={styles.insightsContainer}>
         {fastingWindow.isIntermittentFasting ? (
-          <ThemedView style={styles.insight}>
-            <ThemedText style={styles.insightIcon}>🎯</ThemedText>
-            <ThemedText type="default" style={styles.insightText}>
-              Great job! You achieved the 16-hour intermittent fasting goal.
-            </ThemedText>
+          <ThemedView style={styles.benefitsContainer}>
+            <ThemedView style={styles.insight}>
+              <ThemedText style={styles.insightIcon}>🎯</ThemedText>
+              <ThemedText type="default" style={styles.insightText}>
+                Excellent! You&apos;ve achieved the 16-hour intermittent fasting
+                goal.
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView style={styles.autophagySection}>
+              <ThemedText type="subtitle" style={styles.autophagyTitle}>
+                🧬 Autophagy Benefits Unlocked
+              </ThemedText>
+              <ThemedText type="default" style={styles.autophagyText}>
+                After 16+ hours of fasting, your body enters autophagy - a
+                cellular &quot;spring cleaning&quot; process that:
+              </ThemedText>
+              <ThemedView style={styles.benefitsList}>
+                <ThemedText style={styles.benefitItem}>
+                  • Removes damaged cellular components
+                </ThemedText>
+                <ThemedText style={styles.benefitItem}>
+                  • Promotes cellular regeneration
+                </ThemedText>
+                <ThemedText style={styles.benefitItem}>
+                  • Enhances metabolic efficiency
+                </ThemedText>
+                <ThemedText style={styles.benefitItem}>
+                  • Supports longevity and brain health
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
           </ThemedView>
         ) : (
-          <ThemedView style={styles.insight}>
-            <ThemedText style={styles.insightIcon}>⏰</ThemedText>
-            <ThemedText type="default" style={styles.insightText}>
-              {fastingWindow.durationMs >= 12 * 60 * 60 * 1000
-                ? "Good fasting window! Try extending to 16h for intermittent fasting benefits."
-                : "Consider extending your fasting window for better results."}
-            </ThemedText>
+          <ThemedView style={styles.progressContainer}>
+            <ThemedView style={styles.insight}>
+              <ThemedText style={styles.insightIcon}>⏰</ThemedText>
+              <ThemedText type="default" style={styles.insightText}>
+                {fastingWindow.durationMs >= 12 * 60 * 60 * 1000
+                  ? "Great progress! Extend to 16h to unlock autophagy benefits."
+                  : "Keep going! Longer fasting windows offer greater metabolic benefits."}
+              </ThemedText>
+            </ThemedView>
+
+            <ThemedView style={styles.goalProgress}>
+              <ThemedText type="default" style={styles.goalText}>
+                Goal: 16 hours for intermittent fasting
+              </ThemedText>
+              <ThemedView style={styles.progressBar}>
+                <ThemedView
+                  style={[
+                    styles.progressFill,
+                    {
+                      width: `${Math.min(
+                        100,
+                        (fastingWindow.durationMs / (16 * 60 * 60 * 1000)) * 100
+                      )}%`,
+                    },
+                  ]}
+                />
+              </ThemedView>
+              <ThemedText type="default" style={styles.progressText}>
+                {Math.round(
+                  (fastingWindow.durationMs / (16 * 60 * 60 * 1000)) * 100
+                )}
+                % to autophagy
+              </ThemedText>
+            </ThemedView>
           </ThemedView>
         )}
       </ThemedView>
@@ -285,5 +339,68 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     lineHeight: 20,
     fontSize: 14,
+  },
+  benefitsContainer: {
+    gap: 16,
+  },
+  autophagySection: {
+    marginTop: 12,
+    padding: 16,
+    backgroundColor: "rgba(76, 195, 247, 0.05)",
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: "#4FC3F7",
+  },
+  autophagyTitle: {
+    marginBottom: 8,
+    color: "#4FC3F7",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  autophagyText: {
+    opacity: 0.8,
+    lineHeight: 18,
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  benefitsList: {
+    gap: 6,
+  },
+  benefitItem: {
+    opacity: 0.7,
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  progressContainer: {
+    gap: 12,
+  },
+  goalProgress: {
+    padding: 12,
+    backgroundColor: "rgba(128, 128, 128, 0.05)",
+    borderRadius: 8,
+    gap: 8,
+  },
+  goalText: {
+    opacity: 0.7,
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: "rgba(128, 128, 128, 0.2)",
+    borderRadius: 3,
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#4FC3F7",
+    borderRadius: 3,
+  },
+  progressText: {
+    opacity: 0.6,
+    fontSize: 11,
+    textAlign: "center",
+    fontWeight: "500",
   },
 });

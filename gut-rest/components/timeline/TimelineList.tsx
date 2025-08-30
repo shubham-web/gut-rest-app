@@ -30,6 +30,7 @@ interface TimelineListProps {
   gaps: TimeGapType[];
   isLoading: boolean;
   error: string | null;
+  refreshing: boolean;
   onRefresh: () => Promise<void>;
   onDeleteEntry: (id: string) => void;
   onEditEntry?: (entry: MealEntryType) => void;
@@ -40,6 +41,7 @@ export function TimelineList({
   gaps,
   isLoading,
   error,
+  refreshing,
   onRefresh,
   onDeleteEntry,
   onEditEntry,
@@ -169,7 +171,7 @@ export function TimelineList({
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
-          refreshing={isLoading}
+          refreshing={refreshing}
           onRefresh={onRefresh}
           tintColor="#007AFF"
         />

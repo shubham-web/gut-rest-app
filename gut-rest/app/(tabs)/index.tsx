@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -20,8 +20,15 @@ export default function TimelineScreen() {
     deleteMealEntry,
   } = useMealData();
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const handleRefresh = useCallback(async () => {
-    await refreshData();
+    setRefreshing(true);
+    try {
+      await refreshData();
+    } finally {
+      setRefreshing(false);
+    }
   }, [refreshData]);
 
   const handleDeleteEntry = useCallback(
@@ -71,6 +78,7 @@ export default function TimelineScreen() {
         gaps={todaySummary?.gaps || []}
         isLoading={isLoading}
         error={error}
+        refreshing={refreshing}
         onRefresh={handleRefresh}
         onDeleteEntry={handleDeleteEntry}
         onEditEntry={handleEditEntry}

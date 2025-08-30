@@ -70,30 +70,7 @@ This lightweight approach ensures long-term usability without overwhelming the u
 
 ---
 
-#### **Nice to Have (V1.1)**
-
-1. **Weekly Overview (Charts)**
-
-   - Visualize fasting windows across last 7 days.
-   - Simple bar or line chart.
-
-2. **History View**
-
-   - Calendar-style overview.
-   - Daily fasting achievements marked with ✅.
-   - Tap a date → view its timeline + stats.
-
----
-
-### 5. **Success Metrics**
-
-- **Ease of use**: Users can log an intake in ≤ 5 seconds.
-- **Retention**: Users consistently log meals for at least 7 consecutive days.
-- **Meaningful insights**: Users can easily tell if they achieved their fasting goal.
-
----
-
-### 6. **Design Direction**
+### 4. **Design Direction**
 
 - Clean, minimal UI.
 - Large, tappable icons for quick logging.
