@@ -9,6 +9,7 @@ import {
   getDateStringWithOffset,
 } from "@/services/dateUtils";
 import { BorderRadius, Spacing } from "@/styles/globals";
+import { CategoryTags } from "./CategoryTags";
 
 interface DaySummaryCardProps {
   dailySummary: DailySummary;
@@ -93,7 +94,7 @@ export function DaySummaryCard({
         {fastingWindow && (
           <ThemedView style={styles.statRow}>
             <ThemedText style={[styles.statLabel, { color: subtleTextColor }]}>
-              Fasting
+              Overnight Fasting
             </ThemedText>
             <ThemedView style={styles.fastingInfo}>
               <ThemedText
@@ -121,32 +122,16 @@ export function DaySummaryCard({
 
         {/* Total entries breakdown by category */}
         {entries.length > 0 && (
-          <ThemedView style={styles.statRow}>
+          <ThemedView style={styles.categoryRow}>
             <ThemedText style={[styles.statLabel, { color: subtleTextColor }]}>
               Categories
             </ThemedText>
-            <ThemedText style={[styles.statValue, { color: textColor }]}>
-              {getCategoryBreakdown(entries)}
-            </ThemedText>
+            <CategoryTags entries={entries} />
           </ThemedView>
         )}
       </ThemedView>
     </ThemedView>
   );
-}
-
-function getCategoryBreakdown(entries: DailySummary["entries"]): string {
-  const categoryCount = entries.reduce((acc, entry) => {
-    acc[entry.category] = (acc[entry.category] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  return Object.entries(categoryCount)
-    .map(([category, count]) => {
-      const label = category.replace("_", " ");
-      return count > 1 ? `${count} ${label}` : label;
-    })
-    .join(", ");
 }
 
 const styles = StyleSheet.create({
@@ -182,6 +167,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  categoryRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: Spacing.sm,
   },
   statLabel: {
     fontSize: 14,

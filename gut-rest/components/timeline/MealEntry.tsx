@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Pressable, Alert } from "react-native";
+import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -25,6 +26,7 @@ export function MealEntry({
 }: MealEntryProps) {
   const colorScheme = useColorScheme();
   const categoryConfig = getCategoryConfig(entry.category);
+  const [isLongPressing, setIsLongPressing] = useState(false);
 
   // Theme colors
   const backgroundColor = useThemeColor({}, "background");
@@ -37,6 +39,10 @@ export function MealEntry({
     { light: "#E5E5E7", dark: "#38383A" },
     "text"
   );
+  const longPressOverlayColor = useThemeColor(
+    { light: "rgba(255, 59, 48, 0.1)", dark: "rgba(255, 59, 48, 0.15)" },
+    "text"
+  );
 
   const formatTime = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString("en-US", {
@@ -47,6 +53,9 @@ export function MealEntry({
   };
 
   const handleDelete = () => {
+    // Trigger haptic feedback for delete action
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
     Alert.alert(
       "Delete Entry",
       `Are you sure you want to delete this ${categoryConfig.label.toLowerCase()} entry?`,
@@ -61,12 +70,27 @@ export function MealEntry({
     );
   };
 
+  const handlePressIn = () => {
+    if (onDelete) {
+      setIsLongPressing(true);
+    }
+  };
+
+  const handlePressOut = () => {
+    setIsLongPressing(false);
+  };
+
   const handleEdit = () => {
     onEdit?.(entry);
   };
 
   const entryContent = (
-    <ThemedView style={styles.entryRow}>
+    <ThemedView
+      style={[
+        styles.entryRow,
+        isLongPressing && { backgroundColor: longPressOverlayColor },
+      ]}
+    >
       {/* Time Column */}
       <ThemedView style={styles.timeColumn}>
         <ThemedText style={[styles.timeText, { color: subtleTextColor }]}>
@@ -83,6 +107,7 @@ export function MealEntry({
               backgroundColor: categoryConfig.color,
               borderColor: backgroundColor,
             },
+            isLongPressing && styles.longPressDot,
           ]}
         />
       </ThemedView>
@@ -116,7 +141,10 @@ export function MealEntry({
     <Pressable
       onPress={handleEdit}
       onLongPress={onDelete ? handleDelete : undefined}
-      delayLongPress={500}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      delayLongPress={400}
+      style={({ pressed }) => [pressed && styles.pressedStyle]}
     >
       {entryContent}
     </Pressable>
@@ -189,5 +217,14 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     marginTop: 2,
     lineHeight: 18,
+  },
+  longPressDot: {
+    transform: [{ scale: 1.2 }],
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  pressedStyle: {
+    opacity: 0.7,
   },
 });

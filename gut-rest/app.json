@@ -2,7 +2,7 @@
   "expo": {
     "name": "GutRest",
     "slug": "GutRest",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "gutrest",
@@ -39,6 +39,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5839899a-3bfa-42c2-a1ce-629d8e34aacd"
+      }
     }
   }
 }
