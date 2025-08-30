@@ -14,9 +14,9 @@ Instead of calorie tracking or detailed food diaries, the app focuses on:
 This lightweight approach ensures long-term usability without overwhelming the user.
 
 <p align="center">
-    <img src="./gut-rest/assets/images/screenshots/1.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block; margin-right:10px;">
-    <img src="./gut-rest/assets/images/screenshots/2.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block; margin-right:10px;">
-    <img src="./gut-rest/assets/images/screenshots/3.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block;">
+    <img src="./gut-rest/assets/images/app-screenshots/1.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block; margin-right:10px;">
+    <img src="./gut-rest/assets/images/app-screenshots/2.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block; margin-right:10px;">
+    <img src="./gut-rest/assets/images/app-screenshots/3.png" alt="App Screenshot Main Screen" style="max-width:300px; display:inline-block;">
 </p>
 
 <p align="center">
