@@ -52,6 +52,7 @@ export function CompactHistoryView({
       style={styles.container}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
+      contentInsetAdjustmentBehavior="automatic"
       refreshControl={
         <RefreshControl
           refreshing={isLoading}
@@ -86,6 +87,9 @@ export function CompactHistoryView({
           ))}
         </ThemedView>
       </ThemedView>
+
+      {/* Bottom spacing for tab bar */}
+      <ThemedView style={styles.bottomSpacer} />
     </ScrollView>
   );
 }
@@ -97,6 +101,9 @@ const styles = StyleSheet.create({
   content: {
     padding: Spacing.md,
     paddingBottom: Spacing.xl,
+  },
+  bottomSpacer: {
+    height: 100, // Space for tab bar
   },
   timelineSection: {
     marginTop: Spacing.lg,

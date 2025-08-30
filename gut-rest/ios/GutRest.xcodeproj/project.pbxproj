@@ -7,26 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		025EA39E9B179C0BC1FC662D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = E8EC936C0E7962B246EEF099 /* PrivacyInfo.xcprivacy */; };
+		0AEEF698066E5C189E5BD0FB /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B64E51DF215046B67197CC4A /* ExpoModulesProvider.swift */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		326000109CF355DD23FF042B /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 00F27FA4DA7CC1436FB9513B /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		84178849AE7A28B3B790E88D /* libPods-GutRest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A9CEE8FE51E9879291304CE /* libPods-GutRest.a */; };
+		6E11715B9AE1198D76ED9383 /* libPods-GutRest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2276B9F2899925D667024C6 /* libPods-GutRest.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		F3B4645951BBA9DC979E259F /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D7AA974345F42DB42B7027 /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		00F27FA4DA7CC1436FB9513B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = GutRest/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* GutRest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GutRest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = GutRest/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GutRest/Info.plist; sourceTree = "<group>"; };
-		4A9CEE8FE51E9879291304CE /* libPods-GutRest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GutRest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		61B57285D7D5B4F8554C31B5 /* Pods-GutRest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GutRest.release.xcconfig"; path = "Target Support Files/Pods-GutRest/Pods-GutRest.release.xcconfig"; sourceTree = "<group>"; };
-		A8FB9EB034CD81C5CA6B3E1C /* Pods-GutRest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GutRest.debug.xcconfig"; path = "Target Support Files/Pods-GutRest/Pods-GutRest.debug.xcconfig"; sourceTree = "<group>"; };
+		4DEDCA745714589BE6FEA8E6 /* Pods-GutRest.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GutRest.debug.xcconfig"; path = "Target Support Files/Pods-GutRest/Pods-GutRest.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = GutRest/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B64E51DF215046B67197CC4A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-GutRest/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		B9AE5D1B210446858D7A01A7 /* Pods-GutRest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GutRest.release.xcconfig"; path = "Target Support Files/Pods-GutRest/Pods-GutRest.release.xcconfig"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		E8D7AA974345F42DB42B7027 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-GutRest/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		E8EC936C0E7962B246EEF099 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = GutRest/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D2276B9F2899925D667024C6 /* libPods-GutRest.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GutRest.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = GutRest/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* GutRest-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "GutRest-Bridging-Header.h"; path = "GutRest/GutRest-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				84178849AE7A28B3B790E88D /* libPods-GutRest.a in Frameworks */,
+				6E11715B9AE1198D76ED9383 /* libPods-GutRest.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,15 +53,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				E8EC936C0E7962B246EEF099 /* PrivacyInfo.xcprivacy */,
-			);
-			name = GutRest;
-			sourceTree = "<group>";
-		};
-		1D9BDFDC0C4BE47132D6C803 /* GutRest */ = {
-			isa = PBXGroup;
-			children = (
-				E8D7AA974345F42DB42B7027 /* ExpoModulesProvider.swift */,
+				00F27FA4DA7CC1436FB9513B /* PrivacyInfo.xcprivacy */,
 			);
 			name = GutRest;
 			sourceTree = "<group>";
@@ -70,27 +62,17 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				4A9CEE8FE51E9879291304CE /* libPods-GutRest.a */,
+				D2276B9F2899925D667024C6 /* libPods-GutRest.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		30D336C8F492FCD7B9609473 /* ExpoModulesProviders */ = {
+		4454CDAC6C3A41DC85925CE0 /* GutRest */ = {
 			isa = PBXGroup;
 			children = (
-				1D9BDFDC0C4BE47132D6C803 /* GutRest */,
+				B64E51DF215046B67197CC4A /* ExpoModulesProvider.swift */,
 			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		736594FBC534520D3339876A /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				A8FB9EB034CD81C5CA6B3E1C /* Pods-GutRest.debug.xcconfig */,
-				61B57285D7D5B4F8554C31B5 /* Pods-GutRest.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
+			name = GutRest;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -107,8 +89,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				736594FBC534520D3339876A /* Pods */,
-				30D336C8F492FCD7B9609473 /* ExpoModulesProviders */,
+				C821B64ABA981A0E4E91820F /* Pods */,
+				A3D1AE6BD795644F75C2E41D /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -123,6 +105,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A3D1AE6BD795644F75C2E41D /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				4454CDAC6C3A41DC85925CE0 /* GutRest */,
+			);
+			name = ExpoModulesProviders;
+			sourceTree = "<group>";
+		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +120,16 @@
 			);
 			name = Supporting;
 			path = GutRest/Supporting;
+			sourceTree = "<group>";
+		};
+		C821B64ABA981A0E4E91820F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4DEDCA745714589BE6FEA8E6 /* Pods-GutRest.debug.xcconfig */,
+				B9AE5D1B210446858D7A01A7 /* Pods-GutRest.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,13 +140,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "GutRest" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				5C407FFC6D4F22144819579C /* [Expo] Configure project */,
+				DBB3E4A2B018C00058047CA2 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				6A21161A3F3A3826A43B8E35 /* [CP] Embed Pods Frameworks */,
+				35A8E469E2ECE8BA6E4006D5 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -198,7 +198,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				025EA39E9B179C0BC1FC662D /* PrivacyInfo.xcprivacy in Resources */,
+				326000109CF355DD23FF042B /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,26 +242,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5C407FFC6D4F22144819579C /* [Expo] Configure project */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "[Expo] Configure project";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-GutRest/expo-configure-project.sh\"\n";
-		};
-		6A21161A3F3A3826A43B8E35 /* [CP] Embed Pods Frameworks */ = {
+		35A8E469E2ECE8BA6E4006D5 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -317,6 +298,25 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GutRest/Pods-GutRest-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		DBB3E4A2B018C00058047CA2 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-GutRest/expo-configure-project.sh\"\n";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -325,7 +325,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				F3B4645951BBA9DC979E259F /* ExpoModulesProvider.swift in Sources */,
+				0AEEF698066E5C189E5BD0FB /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,7 +334,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A8FB9EB034CD81C5CA6B3E1C /* Pods-GutRest.debug.xcconfig */;
+			baseConfigurationReference = 4DEDCA745714589BE6FEA8E6 /* Pods-GutRest.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -373,7 +373,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 61B57285D7D5B4F8554C31B5 /* Pods-GutRest.release.xcconfig */;
+			baseConfigurationReference = B9AE5D1B210446858D7A01A7 /* Pods-GutRest.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

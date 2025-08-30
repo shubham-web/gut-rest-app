@@ -86,7 +86,7 @@ interface MealDataContextType {
     category: MealCategory,
     timestamp?: number,
     notes?: string
-  ) => Promise<{ success: boolean; entryDate: string; isToday: boolean }>;
+  ) => Promise<{ success: boolean; isToday: boolean }>;
   updateMealEntry: (id: string, updates: Partial<MealEntry>) => Promise<void>;
   deleteMealEntry: (id: string) => Promise<void>;
 
@@ -137,15 +137,18 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
         await databaseService.initialize();
 
         const now = timestamp || Date.now();
-        // Extract date from the provided timestamp using local time
-        const entryDate = getDateStringFromTimestamp(now);
-        const todayDate = getTodayLocalDateString();
-        const isToday = entryDate === todayDate;
+
+        // Check if entry is for today using timestamps only
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+        const isToday =
+          now >= todayStart.getTime() && now <= todayEnd.getTime();
 
         const entryData = {
           category,
           timestamp: now,
-          date: entryDate,
           notes,
           createdAt: Date.now(),
           updatedAt: Date.now(),
@@ -160,10 +163,9 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
           await loadTodayData();
         }
 
-        // Return information about where the entry was saved
+        // Return simplified information
         return {
           success: true,
-          entryDate,
           isToday,
         };
       } catch (error) {
@@ -172,7 +174,7 @@ export function MealDataProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
     },
-    [getTodayLocalDateString, loadTodayData]
+    [loadTodayData]
   );
 
   const updateMealEntry = useCallback(

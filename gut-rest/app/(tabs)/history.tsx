@@ -25,7 +25,7 @@ import {
 } from "@/services/dateUtils";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.2;
+const SWIPE_THRESHOLD = SCREEN_WIDTH * 0.1;
 
 export default function HistoryScreen() {
   const [currentDate, setCurrentDate] = useState(() => getTodayDateString());

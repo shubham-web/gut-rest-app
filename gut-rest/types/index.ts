@@ -17,8 +17,7 @@ export type MealCategory =
 export interface MealEntry {
   id: string;
   category: MealCategory;
-  timestamp: number; // Unix timestamp in milliseconds
-  date: string; // YYYY-MM-DD format for easy querying
+  timestamp: number; // Unix timestamp in milliseconds - single source of truth for date/time
   notes?: string; // Optional user notes
   createdAt: number;
   updatedAt: number;

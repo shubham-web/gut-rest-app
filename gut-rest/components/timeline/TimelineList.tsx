@@ -11,7 +11,6 @@ import { MealEntry as MealEntryType, TimeGap as TimeGapType } from "@/types";
 import { MealEntry } from "./MealEntry";
 import { TimeGap } from "./TimeGap";
 import { EmptyTimeline } from "./EmptyTimeline";
-import { TimeCalculationService } from "@/services/TimeCalculationService";
 import { GlobalStyles, Spacing } from "@/styles/globals";
 import { router } from "expo-router";
 
@@ -52,13 +51,8 @@ export function TimelineList({
       return [];
     }
 
-    // Sort entries by timestamp, but for same-date entries, ensure proper time ordering
+    // Sort entries by timestamp (most recent first)
     const sortedEntries = [...entries].sort((a, b) => {
-      // First sort by date (most recent date first)
-      if (a.date !== b.date) {
-        return b.date.localeCompare(a.date);
-      }
-      // Within the same date, sort by timestamp (most recent time first)
       return b.timestamp - a.timestamp;
     });
     const items: TimelineItem[] = [];

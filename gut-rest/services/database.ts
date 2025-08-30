@@ -35,6 +35,9 @@ class DatabaseServiceImpl implements DatabaseService {
       this.db = await SQLite.openDatabaseAsync("gutrest.db");
       console.log("[Database] Database opened successfully");
 
+      // Run migrations first to handle existing data
+      await this.runMigrations();
+
       // Create tables
       await this.createTables();
 
@@ -62,7 +65,6 @@ class DatabaseServiceImpl implements DatabaseService {
         id TEXT PRIMARY KEY,
         category TEXT NOT NULL,
         timestamp INTEGER NOT NULL,
-        date TEXT NOT NULL,
         notes TEXT,
         created_at INTEGER NOT NULL,
         updated_at INTEGER NOT NULL
@@ -71,22 +73,86 @@ class DatabaseServiceImpl implements DatabaseService {
 
     // Create indexes for performance
     await this.db.execAsync(`
-      CREATE INDEX IF NOT EXISTS idx_meal_entries_date 
-      ON meal_entries(date);
-    `);
-
-    await this.db.execAsync(`
-      CREATE INDEX IF NOT EXISTS idx_meal_entries_timestamp 
+      CREATE INDEX IF NOT EXISTS idx_meal_entries_timestamp
       ON meal_entries(timestamp);
     `);
 
-    // Create composite index for date + timestamp queries
-    await this.db.execAsync(`
-      CREATE INDEX IF NOT EXISTS idx_meal_entries_date_timestamp 
-      ON meal_entries(date, timestamp);
-    `);
-
     console.log("[Database] Tables and indexes created successfully");
+  }
+
+  /**
+   * Run database migrations to handle schema changes
+   */
+  private async runMigrations(): Promise<void> {
+    if (!this.db) throw new Error("Database not initialized");
+
+    try {
+      // Check if the old table with date column exists
+      const tableInfo = await this.db.getAllAsync(`
+        SELECT name FROM sqlite_master
+        WHERE type='table' AND name='meal_entries'
+      `);
+
+      if (tableInfo.length > 0) {
+        // Check if the table has the old date column
+        const columnInfo = await this.db.getAllAsync(`
+          PRAGMA table_info(meal_entries)
+        `);
+
+        const hasDateColumn = columnInfo.some(
+          (col: any) => col.name === "date"
+        );
+
+        if (hasDateColumn) {
+          console.log("[Database] Migrating schema - removing date column");
+
+          // First, clean up any existing temporary table from previous failed migrations
+          await this.db.execAsync(`DROP TABLE IF EXISTS meal_entries_new;`);
+
+          // Create new table without date column
+          await this.db.execAsync(`
+            CREATE TABLE meal_entries_new (
+              id TEXT PRIMARY KEY,
+              category TEXT NOT NULL,
+              timestamp INTEGER NOT NULL,
+              notes TEXT,
+              created_at INTEGER NOT NULL,
+              updated_at INTEGER NOT NULL
+            );
+          `);
+
+          // Copy data from old table to new table (excluding date column)
+          await this.db.execAsync(`
+            INSERT INTO meal_entries_new (id, category, timestamp, notes, created_at, updated_at)
+            SELECT id, category, timestamp, notes, created_at, updated_at
+            FROM meal_entries;
+          `);
+
+          // Drop old table
+          await this.db.execAsync(`DROP TABLE meal_entries;`);
+
+          // Rename new table to original name
+          await this.db.execAsync(`
+            ALTER TABLE meal_entries_new RENAME TO meal_entries;
+          `);
+
+          // Recreate indexes
+          await this.db.execAsync(`
+            CREATE INDEX IF NOT EXISTS idx_meal_entries_timestamp
+            ON meal_entries(timestamp);
+          `);
+
+          console.log("[Database] Schema migration completed successfully");
+        }
+      }
+    } catch (error) {
+      console.error("[Database] Migration failed:", error);
+      throw this.createError(
+        "MIGRATION_FAILED",
+        "Failed to migrate database schema",
+        error
+      );
+    }
   }
 
   /**
@@ -107,14 +173,13 @@ class DatabaseServiceImpl implements DatabaseService {
       };
 
       await this.db.runAsync(
-        `INSERT INTO meal_entries 
-         (id, category, timestamp, date, notes, created_at, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO meal_entries
+         (id, category, timestamp, notes, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           mealEntry.id,
           mealEntry.category,
           mealEntry.timestamp,
-          mealEntry.date,
           mealEntry.notes || null,
           mealEntry.createdAt,
           mealEntry.updatedAt,
@@ -155,10 +220,6 @@ class DatabaseServiceImpl implements DatabaseService {
       if (updates.timestamp !== undefined) {
         setClause.push("timestamp = ?");
         values.push(updates.timestamp);
-      }
-      if (updates.date !== undefined) {
-        setClause.push("date = ?");
-        values.push(updates.date);
       }
       if (updates.notes !== undefined) {
         setClause.push("notes = ?");
@@ -231,15 +292,22 @@ class DatabaseServiceImpl implements DatabaseService {
   }
 
   /**
-   * Get meal entries for a specific date
+   * Get meal entries for a specific date using timestamp range
    */
   async getMealEntriesByDate(date: string): Promise<MealEntry[]> {
     if (!this.db) throw new Error("Database not initialized");
 
     try {
+      // Convert date string to timestamp range (start and end of day)
+      const dateObj = new Date(date);
+      const startOfDay = new Date(dateObj);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(dateObj);
+      endOfDay.setHours(23, 59, 59, 999);
+
       const rows = await this.db.getAllAsync(
-        "SELECT * FROM meal_entries WHERE date = ? ORDER BY timestamp ASC",
-        [date]
+        "SELECT * FROM meal_entries WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp ASC",
+        [startOfDay.getTime(), endOfDay.getTime()]
       );
 
       return rows.map(this.mapRowToMealEntry);
@@ -254,7 +322,7 @@ class DatabaseServiceImpl implements DatabaseService {
   }
 
   /**
-   * Get meal entries within a date range
+   * Get meal entries within a date range using timestamps
    */
   async getMealEntriesInRange(
     startDate: string,
@@ -263,9 +331,15 @@ class DatabaseServiceImpl implements DatabaseService {
     if (!this.db) throw new Error("Database not initialized");
 
     try {
+      // Convert date strings to timestamp ranges
+      const startDateObj = new Date(startDate);
+      startDateObj.setHours(0, 0, 0, 0);
+      const endDateObj = new Date(endDate);
+      endDateObj.setHours(23, 59, 59, 999);
+
       const rows = await this.db.getAllAsync(
-        "SELECT * FROM meal_entries WHERE date >= ? AND date <= ? ORDER BY timestamp ASC",
-        [startDate, endDate]
+        "SELECT * FROM meal_entries WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp ASC",
+        [startDateObj.getTime(), endDateObj.getTime()]
       );
 
       return rows.map(this.mapRowToMealEntry);
@@ -503,7 +577,6 @@ class DatabaseServiceImpl implements DatabaseService {
       id: row.id,
       category: row.category,
       timestamp: row.timestamp,
-      date: row.date,
       notes: row.notes,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
